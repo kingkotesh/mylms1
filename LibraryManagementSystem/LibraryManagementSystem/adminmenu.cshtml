@@ -1,0 +1,108 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    var kk = Request.Cookies["category"].Value;
+    var q = "select * from " + kk;
+    if (IsPost && Request.Form["abbtn"] != null)
+    {
+        Validation.RequireField("title", "Enter title");
+        Validation.RequireField("author", "Enter author");
+        Validation.RequireField("price", "Enter price");
+        try
+        {
+            if (Validation.IsValid())
+            {
+                var iq = "insert into " + kk + "(title,author,price,status) values('" + Request.Form["title"] + "','" + Request.Form["author"] + "','" + Request.Form["price"] + "','NotReserved')";
+                db.Execute(iq);
+                Response.Redirect("~/adminmenu.cshtml");
+            }
+        }
+        catch (Exception e)
+        {
+            <h1>Book already Exists</h1>
+        }
+
+
+
+    }
+    var st = "";
+    if (IsPost && Request.Form["btn"] != null)
+    {
+        st = "%" + Request.Form["st"] + "%";
+        q = "select * from " + kk + " where title like @0";
+    }
+    var r = db.Query(q, st);
+    WebGrid w = new WebGrid(r);
+
+}
+<style>
+    body {
+        font-family: Times New Roman;
+        font-size:20px;
+    }
+
+    a {
+        color: red;
+    }
+
+    .webgrid-table {
+        width: 1000px;
+        font-size: 40px;
+    }
+
+    .webgrid-header {
+        background-color: black;
+
+    }
+
+    .webgrid-row-style {
+        background-color: black;
+        color:cyan;
+    }
+
+    .webgrid-alternating-row {
+        background-color: black;
+        color:cyan;
+    }
+
+</style>
+
+<h1>admin</h1>
+
+<h1 style="font-family:Monotype Corsiva;text-align:center;color:rgb(235, 13, 168);font-size:35pt">
+    WELCOME To Books World! <span style="color: #ADFF2F">  @Request.Cookies["cook"].Value</span>
+</h1>
+<form action="" method="post">
+    <fieldset>
+        <legend>search</legend>
+        title<input type="text" id="st" name="st" />
+        <input type="submit" id="btn" name="btn" value="search" />
+    </fieldset>
+
+    <fieldset>
+        <legend>Add Book</legend>
+        <label for="name">Title</label>
+        <input type="text" id="title" name="title" />
+        <label for="msg">Author</label>
+        <input type="text" id="author" name="author" />
+        <label for="msg">Price</label>
+        <input type="text" id="price" name="price" />
+        <input type="submit" value="Add Book" id="abbtn" name="abbtn" />
+    </fieldset>
+</form>
+
+
+
+@w.GetHtml(tableStyle: "webgrid-table",
+headerStyle: "webgrid-header",
+alternatingRowStyle: "webgrid-alternating-row",
+rowStyle: "webgrid-row-style",
+    columns: w.Columns(w.Column("id"), w.Column("title"), w.Column("author"), w.Column("price"), w.Column("status"),
+    w.Column(format:@<a href=" ~/view?id=@item.id">view</a>),
+w.Column(format:@<a href="~/EditDelete?id=@item.id">Update/Delete</a>)
+))
+
+<hr />
+<h1>go to <a href="~/adminmenu.cshtml">Menu Page</a></h1>
+<h1>go to <a href="~/admincategory.cshtml">Category Page</a></h1>
+

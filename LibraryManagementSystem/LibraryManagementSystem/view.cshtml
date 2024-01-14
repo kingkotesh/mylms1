@@ -1,0 +1,94 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    var kk = Request.Cookies["category"].Value;
+    var query = "select * from " + kk + "  where id=" + Int32.Parse(Request.QueryString["id"]);
+    var row = db.QuerySingle(query);
+    var t = row.title;
+
+
+    var status = "";
+    if (IsPost)
+    {
+        var rk = "select status from " + kk + " where id=" + Int32.Parse(Request.QueryString["id"]);
+        var result = db.QuerySingle(rk);
+
+        if (result.status == "NotReserved" || result.status == "")
+        {
+            //Response.Cookies["rescook"].Value = Request.Cookies["cook"].Value;
+            var i = "insert into reservation(username,title) values('" + Request.Cookies["cook"].Value + "','" + t + "')";
+            db.Execute(i);
+            status = Request["res"];
+            // string newValue = Request["res"];
+            var ur = "update " + kk + " set status = @0 where id=" + Int32.Parse(Request.QueryString["id"]);
+            db.Execute(ur, status);
+
+            var u2 = "SELECT username FROM UserDetails WHERE username = @0";
+            var u3 = db.QuerySingle(u2, Request.Cookies["cook"].Value);
+            //var u3 = db.QuerySingle(u2, t);
+            if (u3 == null)
+            {
+                u2 = "SELECT username FROM AdminDetails WHERE username = @0";
+                u3 = db.QuerySingle(u2, Request.Cookies["cook"].Value);
+                //u3 = db.QuerySingle(u2, t);
+                @RenderPage("~/adminmenu.cshtml");
+            }
+
+            else
+            {
+                @RenderPage("~/usermenu.cshtml");
+            }
+
+        }
+        else if (result.status == "Reserved" )
+        {
+            var u1 = Request.Cookies["cook"].Value;
+            var u2 = "SELECT username FROM reservation WHERE title = @0";
+            var u3 = db.QuerySingle(u2, t);
+            if (u1 == u3.username)
+            {
+                string newValue = Request["res"];
+                var u = "update " + kk + " set status = @0 where id=" + Int32.Parse(Request.QueryString["id"]);
+                db.Execute(u, newValue);
+
+                var dquery = "delete from reservation where username=@0";
+                db.Execute(dquery, Request.Cookies["cook"].Value);
+
+                var u22 = "SELECT username FROM UserDetails WHERE username = @0";
+                var u33 = db.QuerySingle(u22, Request.Cookies["cook"].Value);
+                //var u3 = db.QuerySingle(u2, t);
+                if (u33 == null)
+                {
+                    u22 = "SELECT username FROM AdminDetails WHERE username = @0";
+                    u33 = db.QuerySingle(u22, Request.Cookies["cook"].Value);
+                    //u3 = db.QuerySingle(u2, t);
+                    @RenderPage("~/adminmenu.cshtml");
+                }
+
+                else
+                {
+                    @RenderPage("~/usermenu.cshtml");
+                }
+
+            }
+            else
+            {
+                <h1>Already reserved by @u3.username</h1>
+            }
+        }
+    }
+}
+<h1>Your subject is: @t </h1>
+<h3>
+    To look in detail visit the link provided =======><a href="https://www.google.com/search?q=@t+book" target="_self">In Detail</a>
+</h3>
+
+
+<h1>To reserve a book</h1>
+<form action="" method="post">
+    <select id="res" name="res">
+        <option value="NotReserved">no</option>
+        <option value="Reserved">yes</option>
+    </select>
+    <button type="submit">reserve</button>
+</form>

@@ -1,0 +1,74 @@
+﻿@using WebMatrix.Data;
+@{
+    Database db = Database.Open("lmsdb");
+    var q = "select * from cse union all select * from ece union all select * from it union all select * from mech";
+    var r = db.Query(q);
+    WebGrid w = new WebGrid(r);
+
+
+    if (IsPost)
+    {
+        Response.Cookies["category"].Value = Request["dept"];
+        Response.Redirect("~/usermenu.cshtml");
+    }
+}
+<head>
+    <style>
+        body {
+            background-image: url('https://wallpapercave.com/wp/wp12420121.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 20px;
+            color: #ffffff;
+            padding: 20px;
+            text-align: right;
+        }
+
+        a {
+            color: yellow;
+        }
+
+        .webgrid-table {
+            width: 1000px;
+            font-size:40px;
+        }
+
+        .webgrid-header {
+            background-color: black;
+        }
+
+        .webgrid-row-style {
+            background-color: black;
+        }
+
+        .webgrid-alternating-row {
+            background-color: black;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Choose your category:</h1>
+    <form method="post">
+        <select id="dept" name="dept">
+            <option>Select</option>
+            <option value="cse">CSE</option>
+            <option value="ece">ECE</option>
+            <option value="it">IT</option>
+            <option value="mech">MECH</option>
+        </select>
+        <button type="submit">press</button>
+    </form>
+</body>
+
+
+<h1>My items:<a href="~/mylist.cshtml">tap-out</a></h1>
+
+@w.GetHtml(tableStyle: "webgrid-table",
+headerStyle: "webgrid-header",
+alternatingRowStyle: "webgrid-alternating-row",
+rowStyle: "webgrid-row-style",
+    columns: w.Columns(w.Column("id"), w.Column("title"), w.Column("author"), w.Column("price"), w.Column("status"))
+)

@@ -1,0 +1,47 @@
+﻿@using WebMatrix.Data;
+@{
+    Database db = Database.Open("lmsdb");
+    /*  var kk = Request.Cookies["category"].Value;
+     var q = "select * from " + kk;
+     var v = db.Query(q);
+     WebGrid w = new WebGrid(v);
+    */
+    var qq = "select * from reservation";
+    var vv = db.Query(qq);
+    WebGrid ww = new WebGrid(vv);
+}
+<style>
+
+    a {
+        color: yellow;
+    }
+
+    .webgrid-table {
+        width: 1000px;
+        font-size: 40px;
+    }
+
+    .webgrid-header {
+        background-color: black;
+    }
+
+    .webgrid-row-style {
+        background-color: black;
+        color:cyan;
+    }
+
+    .webgrid-alternating-row {
+        background-color: black;
+        color:cyan;
+    }
+
+</style>
+<h1>All reserved books are:</h1>
+
+@ww.GetHtml(tableStyle: "webgrid-table",
+headerStyle: "webgrid-header",
+alternatingRowStyle: "webgrid-alternating-row",
+rowStyle: "webgrid-row-style",
+        columns: ww.Columns(ww.Column("id"), ww.Column("username"), ww.Column("title"))
+
+    )

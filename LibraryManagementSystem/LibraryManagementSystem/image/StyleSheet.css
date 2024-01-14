@@ -1,0 +1,22 @@
+﻿body {
+    text-align:center;
+    background-color:aquamarine;
+}
+.grid{
+    margin:2px;
+    border-collapse:collapse;
+    width:40%;
+}
+.grid th, .grid td {
+    margin: 2px;
+    border-collapse: collapse;
+}
+.alt{
+    background-color:beige;
+    color:brown;
+}
+.head{
+    background-color:cornsilk;
+    color:darkslateblue;
+    font-weight:bold;
+}

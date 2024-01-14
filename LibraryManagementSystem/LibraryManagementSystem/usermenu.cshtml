@@ -1,0 +1,64 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    var kk = Request.Cookies["category"].Value;
+    var q = "select * from "+kk;
+    var st = "";
+    if (IsPost && Request.Form["btn"] != null)
+    {
+        st = "%" + Request.Form["st"] + "%";
+        q = "select * from " + kk + " where title like @0";
+    }
+    var r = db.Query(q, st);
+    WebGrid w = new WebGrid(r);
+}
+<style>
+    a{
+        color:red;
+    }
+    .webgrid-table {
+        width: 1000px;
+        font-size: 40px;
+    }
+
+    .webgrid-header {
+        background-color: black;
+        
+    }
+
+    .webgrid-row-style {
+        background-color: black;
+        color:cyan;
+    }
+
+    .webgrid-alternating-row {
+        background-color: black;
+        color: cyan;
+    }
+
+</style>
+
+<h1>user</h1>
+
+<h1 style="font-family:Monotype Corsiva;text-align:center;color:rgb(235, 13, 168);font-size:35pt">
+    WELCOME To Books World! <span style="color: #ADFF2F">  @Request.Cookies["cook"].Value</span>
+</h1>
+<form method="post" action="">
+    <fieldset>
+        <legend>search</legend>
+        title<input type="text" id="st" name="st" />
+        <input type="submit" id="btn" name="btn" value="search" />
+    </fieldset>
+
+
+</form>
+
+<h1>The books are:</h1>
+@w.GetHtml(tableStyle: "webgrid-table",
+headerStyle: "webgrid-header",
+alternatingRowStyle: "webgrid-alternating-row",
+rowStyle: "webgrid-row-style",
+    columns:w.Columns( w.Column("id"), w.Column("title"), w.Column("author"), w.Column("price"),w.Column("status"),
+    w.Column(format:@<a href=" ~/view?id=@item.id">view</a>)
+))
+

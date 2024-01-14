@@ -1,0 +1,46 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    var kk = Request.Cookies["category"].Value;
+    var query = "select * from "+kk+" where id=" + Int32.Parse(Request.QueryString["id"]);
+    var row = db.QuerySingle(query);
+
+    if (IsPost && Request.Form["eb"] != null)
+    {
+        var uquery = "update "+kk+" set title=@0,author=@1,price=@2 where id=@3";
+        db.Execute(uquery, Request.Form["title"], Request.Form["author"],Request.Form["price"], Int32.Parse(Request.QueryString["id"]));
+        Response.Redirect("~/adminmenu");
+    }
+    if (IsPost && Request.Form["del"] != null)
+    {
+        var dquery = "delete from "+kk+" where id=@0";
+        db.Execute(dquery, Int32.Parse(Request.QueryString["id"]));
+        Response.Redirect("~/adminmenu");
+        //RenderPage("~/adminmenu");
+    }
+}
+<form action="" method="post">
+    <table align="center">
+        <tr>
+            <td>ID:</td>
+            <td><input type="text" id="ibtn" name="ibtn" value="@row.id" disabled /></td>
+        </tr>
+        <tr>
+            <td>Title:</td>
+            <td><input type="text" id="title" name="title" value="@row.title" /></td>
+        </tr>
+        <tr>
+            <td>Author:</td>
+            <td><input type="text" id="author" name="author" value="@row.author" /></td>
+        </tr>
+        <tr>
+            <td>Price:</td>
+            <td><input type="text" id="price" name="price" value="@row.price" /></td>
+        </tr>
+
+        <tr>
+            <td><input type="submit" name="eb" value="Update" /></td>
+            <td><input type="submit" name="del" value="Delete" /></td>
+        </tr>
+    </table>
+</form>

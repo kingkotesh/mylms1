@@ -1,0 +1,94 @@
+﻿@using WebMatrix.Data
+@{
+    Database db = Database.Open("lmsdb");
+    if (IsPost)
+    {
+        String us = Request.Form["us"];
+        String ps = Request.Form["ps"];
+        var r = db.QuerySingle("select * from UserDetails where username = @0 AND password = @1", us, ps);
+        var rr = db.QuerySingle("select * from AdminDetails where username = @0 AND password = @1", us, ps);
+        Response.Cookies["cook"].Value = Request.Form["us"];
+
+        if (r != null)
+        {
+            Response.Redirect("~/usercategory.cshtml");
+        }
+        else if (rr != null)
+        {
+            Response.Redirect("~/admincategory.cshtml");
+
+        }
+        <h4 style="color:red;">Invalid login attempt. Please check your credentials.</h4>
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D');
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 20px;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            border: 2px solid yellow;
+            width: 320px;
+        }
+
+        td {
+            width: 100px;
+            color: #ffffff;
+        }
+
+        input [type="text"],
+        input[type="password"] {
+            margin-top: 20px;
+        }
+
+
+        input[type="submit"] {
+            background-color: yellow;
+            color: #000000;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 23px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <form method="post" action="">
+        <p style="color:cyan;font-size:30px;font-weight:bold">Login</p>
+        <table>
+
+            <tr>
+                <td style="padding-top: 20px;"> Username:</td>
+                <td style="padding-top: 20px"><input type="text" id="us" name="us" required /><br /></td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td>
+                    <input type="password" id="ps" name="ps" required />
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" id="btn" name="btn" value="login" /></td>
+            </tr>
+
+        </table>
+    </form>
+</body>
+</html>

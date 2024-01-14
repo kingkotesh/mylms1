@@ -1,0 +1,39 @@
+﻿@using WebMatrix.Data;
+@{ 
+    Database db = Database.Open("lmsdb");
+    var q = "select title from reservation where username=@0"; 
+    var r = db.Query(q, Request.Cookies["cook"].Value);
+    WebGrid w = new WebGrid(r);
+}
+<style>
+    a {
+        color: red;
+    }
+
+    .webgrid-table {
+        width: 1000px;
+        font-size: 40px;
+    }
+
+    .webgrid-header {
+        background-color: black;
+    }
+
+    .webgrid-row-style {
+        background-color: black;
+        color: cyan;
+    }
+
+    .webgrid-alternating-row {
+        background-color: black;
+        color: cyan;
+    }
+
+</style>
+<h1>My Books are:</h1>
+@w.GetHtml(tableStyle: "webgrid-table",
+headerStyle: "webgrid-header",
+alternatingRowStyle: "webgrid-alternating-row",
+rowStyle: "webgrid-row-style",
+    columns:w.Columns(w.Column("title"))
+    )
